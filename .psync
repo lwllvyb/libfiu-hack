@@ -1,0 +1,6 @@
+ignores: []
+remote: !!python/unicode '~/lwl/'
+ssh:
+  host: !!python/unicode '10.4.236.108'
+  port: !!python/unicode '222'
+  username: !!python/unicode 'root'
