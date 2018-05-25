@@ -4,6 +4,8 @@
 
 #include <fiu.h>		/* fiu_* */
 #include <stdlib.h>		/* NULL, random() */
+#include <unistd.h>
+#include <stdio.h>
 
 /* Recursion counter, per-thread */
 extern int __thread _fiu_called;
@@ -155,13 +157,19 @@ void *libc_symbol(const char *symbol);
 		fstatus = fiu_fail(FIU_NAME);			\
 		if (fstatus != 0) {				\
 			void *finfo = fiu_failinfo();		\
+			r = FAIL_RET;						\
 			if (finfo == NULL) {			\
 				errno = valid_errnos[random() % \
 					sizeof(valid_errnos) / sizeof(int)]; \
 			} else {				\
 				errno = (long) finfo;		\
-			}					\
-			r = FAIL_RET;				\
+				if (errno == -1)			\
+				{							\
+					sleep(random() % 10);	\
+					r = 0;					\
+					perror("random sleep\n");\
+				}							\
+			}								\
 			printd("failing\n");			\
 			goto exit;				\
 		}
